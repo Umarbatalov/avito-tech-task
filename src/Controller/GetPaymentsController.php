@@ -46,7 +46,7 @@ final class GetPaymentsController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="Массив найденых платежей",
+     *         description="Массив найденных платежей",
      *         @OA\JsonContent(
      *             type="array",
      *             @OA\Items(

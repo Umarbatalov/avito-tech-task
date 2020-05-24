@@ -30,7 +30,7 @@ paths:
             example: '2020-05-25'
       responses:
         '200':
-          description: 'Массив найденых платежей'
+          description: 'Массив найденных платежей'
           content:
             application/json:
               schema:
@@ -117,7 +117,7 @@ components:
           type: string
           example: 'За электроэнергию'
         confirmation_url:
-          description: 'URL магазина на который будет отправлено уведомлене.'
+          description: 'URL магазина на который будет отправлено уведомление.'
           type: string
           example: 'https://website.com/return_url'
       type: object

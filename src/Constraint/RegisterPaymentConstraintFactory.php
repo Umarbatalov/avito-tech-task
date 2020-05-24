@@ -40,7 +40,7 @@ final class RegisterPaymentConstraintFactory implements ConstraintFactoryInterfa
      *     property="confirmation_url",
      *     type="string",
      *     example="https://website.com/return_url",
-     *     description="URL магазина на который будет отправлено уведомлене."
+     *     description="URL магазина на который будет отправлено уведомление."
      * )
      *
      */
