@@ -6,7 +6,7 @@
   {% if amount is not defined or purpose is not defined %}
     Не удалось отобразить форму оплаты !
   {% else %}
-    <pre><b>Сумма:</b> {{ amount }}</pre>
+    <pre><b>Сумма:</b> {{ amount.value }} {{ amount.currency }}</pre>
     <pre><b>Назначение платежа:</b> {{ purpose }}</pre>
 
     <div id="payment-result" style="color: red;"></div>
