@@ -32,6 +32,11 @@ RUN chown -R www-data:www-data var
 VOLUME ["/srv/vendor"]
 VOLUME ["/srv/var"]
 
+COPY docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
+ENTRYPOINT ["docker-entrypoint"]
+
 CMD ["php-fpm"]
 
 EXPOSE 9000

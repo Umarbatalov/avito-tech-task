@@ -1,0 +1,177 @@
+openapi: 3.0.0
+info:
+  title: 'Avito tech task API'
+  version: 0.0.1
+servers:
+  -
+    url: ''
+    description: API
+paths:
+  /payments:
+    get:
+      tags:
+        - payments
+      description: 'Получаем список всех платежей за переданный период.'
+      operationId: 'App\Controller\GetPaymentsController::getPayments'
+      parameters:
+        -
+          name: 'filter[from]'
+          in: query
+          description: 'Дата, от которой будет производится поиск.'
+          schema:
+            type: datetime
+            example: '2020-05-24'
+        -
+          name: 'filter[to]'
+          in: query
+          description: 'Дата, до которой будет производится поиск.'
+          schema:
+            type: datetime
+            example: '2020-05-25'
+      responses:
+        '200':
+          description: 'Массив найденых платежей'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+    post:
+      tags:
+        - payments
+      description: 'Создаем платеж, передав номер карты и номер сессии.'
+      operationId: 'App\Controller\MakePaymentController::makePayment'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentFormConstraintFactory'
+      responses:
+        '200':
+          description: 'Платеж успешно совершен.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '400':
+          description: 'Переданные данные невалидны или истек срок платежной сессии'
+  /payments/register:
+    post:
+      tags:
+        - payments
+      description: 'Создание новой платежной сессии'
+      operationId: 'App\Controller\RegisterPaymentController::registerPayment'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - amount
+                - purpose
+              type: object
+              allOf:
+                -
+                  $ref: '#/components/schemas/RegisterPaymentConstraintFactory'
+      responses:
+        '200':
+          description: 'При успешном ответе мы получим ссылку на форму оплаты платежа.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  payment_link: { type: string, example: 'https://example.com/payments/card/form?sessionId=69ed9c34-9d0e-11ea-84a8-0242ac150002' }
+                type: object
+                allOf:
+                  - { $ref: '#/components/schemas/PaymentSession' }
+        '400':
+          description: 'Bad Request'
+components:
+  schemas:
+    PaymentFormConstraintFactory:
+      properties:
+        session_uuid:
+          type: string
+          example: 10b47221-9948-11ea-9402-0242ac190002
+        card_number:
+          type: string
+          example: '5500000000000004'
+      type: object
+    RegisterPaymentConstraintFactory:
+      properties:
+        amount:
+          properties:
+            value:
+              description: Сумма
+              type: float
+              example: 1000.03
+            currency:
+              description: Валюта
+              type: string
+              enum:
+                - RUB
+              example: RUB
+          type: object
+        purpose:
+          description: 'Назначение платежа.'
+          type: string
+          example: 'За электроэнергию'
+        confirmation_url:
+          description: 'URL магазина на который будет отправлено уведомлене.'
+          type: string
+          example: 'https://website.com/return_url'
+      type: object
+    Payment:
+      properties:
+        id:
+          type: integer
+          example: '34'
+        amount:
+          properties:
+            value:
+              type: float
+              example: 1000.03
+            currency:
+              type: string
+              enum:
+                - RUB
+              example: RUB
+          type: object
+        puprose:
+          description: 'Назначение платежа'
+          type: string
+        session_uuid:
+          type: string
+          example: 97643036-9d94-11ea-b769-0242ac160002
+        created_at:
+          type: string
+          format: datetime
+          example: '2020-05-23 18:31:45'
+      type: object
+    PaymentSession:
+      properties:
+        uuid:
+          type: string
+          example: 97643036-9d94-11ea-b769-0242ac160002
+        amount:
+          properties:
+            value:
+              type: float
+              example: 1000.03
+            currency:
+              type: string
+              enum:
+                - RUB
+              example: RUB
+          type: object
+        puprose:
+          description: 'Назначение платежа'
+          type: string
+        confirmation_url:
+          type: string
+          example: 'https://website.com/return_url'
+      type: object
+tags:
+  -
+    name: payments
+    description: 'Работа с платежами'

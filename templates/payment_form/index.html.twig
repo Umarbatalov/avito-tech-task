@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Страница оплаты счета{% endblock %}
+
+{% block body %}
+  {% if amount is not defined or purpose is not defined %}
+    Не удалось отобразить форму оплаты !
+  {% else %}
+    <pre><b>Сумма:</b> {{ amount }}</pre>
+    <pre><b>Назначение платежа:</b> {{ purpose }}</pre>
+
+    <div id="payment-result" style="color: red;"></div>
+
+    <form method="post" id="payment_form">
+      <pre><label for="card_number">Введите номер карты</label></pre>
+      <input type="text" name="card_number" id="card_number" class="form-control" required autofocus>
+      <pre></pre>
+      <button class="btn btn-lg btn-primary" type="submit">
+        Оплатить
+      </button>
+    </form>
+  {% endif %}
+  <script>
+    const paymentForm = document.getElementById('payment_form');
+    const cardNumber = document.getElementById('card_number');
+
+    const url = new URL(window.location.href);
+
+    const sessionId = url.searchParams.get("sessionId");
+
+    if (paymentForm && cardNumber && sessionId) {
+      paymentForm.onsubmit = (e) => {
+        e.preventDefault();
+
+        const data = {
+          session_uuid: sessionId,
+          card_number: cardNumber.value
+        };
+
+        const resultBlock = document.getElementById('payment-result');
+
+        fetch('/payments',
+          {
+            method: 'POST',
+            body: JSON.stringify(data)
+          })
+          .then(
+            function (response) {
+              if (response.status === 200) {
+                resultBlock.innerText = 'Оплата прошла успешно!';
+                cardNumber.value = '';
+              } else {
+                resultBlock.innerText = 'Произошла ошибка при оплате!';
+                cardNumber.value = '';
+              }
+            }
+          )
+          .catch(function () {
+            resultBlock.innerText = 'Произошла ошибка при оплате!';
+            cardNumber.value = '';
+          });
+      }
+    }
+  </script>
+{% endblock %}
